@@ -1,0 +1,225 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<schema xmlns="http://www.w3.org/2001/XMLSchema" targetNamespace="http://www.example.org/RulkesDSLSchema" xmlns:tns="http://www.example.org/RulkesDSLSchema" elementFormDefault="qualified">
+
+    <complexType name="ObjectNodeType">
+    	<sequence>
+    		<element name="ruleContext" type="tns:RulesIDContextType"></element>
+    		<element name="className" type="string"></element>
+    		<element name="alphaNode" type="tns:AlphaNodeType"
+    			maxOccurs="1" minOccurs="1">
+    		</element>
+    		<element name="data" type="base64Binary"></element>
+    	</sequence>
+    	<attribute name="modifiedDate" type="dateTime"></attribute>
+    	<attribute name="description" type="string"></attribute>		
+    </complexType>
+
+    <complexType name="AlphaNodeType">
+    	<sequence>
+    		<element name="ruleContext" type="tns:RulesIDContextType"></element>
+    		<element name="name" type="string"></element>
+    		<element name="comparator" type="string"></element>
+    		<choice>
+    			<element name="alphaNode" type="tns:AlphaNodeType"
+    				maxOccurs="1" minOccurs="1">
+    			</element>
+    			<element name="joinNode" type="tns:JoinNodeType"
+    				maxOccurs="1" minOccurs="1">
+    			</element>
+    		</choice>
+    	</sequence>
+    	<attribute name="id" type="string"></attribute>
+    	<attribute name="modifiedDate" type="dateTime"></attribute>
+    	<attribute name="description" type="string"></attribute>
+		
+    </complexType>
+
+    <complexType name="ComparatorType">
+    	<choice>
+    		<element name="EQUALS" type="tns:EqualsComparisonType"></element>
+    		<element name="GT" type="tns:GreaterThanComparisonType"></element>
+    		<element name="LT" type="tns:LessThanComparisonType"></element>
+    		<element name="GTE"
+    			type="tns:GreaterThanEqualsComparisonType">
+    		</element>
+    		<element name="LTE"
+    			type="tns:LessThanEqualsComparisonType">
+    		</element>
+    		<element name="NEQ" type="tns:NotEqualsComparisonType"></element>
+    		<element name="DNX" type="tns:NotExistsComparisonType"></element>
+    		<element name="TEQ" type="tns:MatchesComparisonType"></element>
+    	</choice>
+    </complexType>
+    
+    <complexType name="NameComparatorType">
+    	<complexContent>
+    		<extension base="tns:ComparatorType">
+    			<sequence>
+    				<element name="firstField" type="string"></element>
+    				<element name="otherField" type="string"></element>
+    			</sequence>
+    		</extension>
+    	</complexContent>
+    </complexType>
+
+
+
+
+    <complexType name="JoinComparatorType">
+    	<complexContent>
+    		<extension base="tns:NameComparatorType">
+    			<sequence>
+    				<element name="whereElement"
+    					type="tns:ValuesComparatorType">
+    				</element>
+    			</sequence>
+    		</extension>
+    	</complexContent>
+    </complexType>
+    
+
+    <complexType name="ComparisonType"></complexType>
+
+    <complexType name="EqualsComparisonType">
+    	<sequence>
+    		<element name="name" type="string"></element>
+    		<element name="symbol" type="string"></element>
+    		<element name="value" type="string"></element>
+    	</sequence>
+    </complexType>
+
+    <complexType name="GreaterThanComparisonType">
+    	<complexContent>
+    		<extension base="tns:EqualsComparisonType"></extension>
+    	</complexContent>
+    </complexType>
+
+    <complexType name="LessThanComparisonType">
+    	<complexContent>
+    		<extension base="tns:EqualsComparisonType"></extension>
+    	</complexContent>
+    </complexType>
+
+    <complexType name="GreaterThanEqualsComparisonType">
+    	<complexContent>
+    		<extension base="tns:EqualsComparisonType"></extension>
+    	</complexContent>
+    </complexType>
+
+    <complexType name="LessThanEqualsComparisonType">
+    	<complexContent>
+    		<extension base="tns:EqualsComparisonType"></extension>
+    	</complexContent>
+    </complexType>
+
+    <complexType name="NotEqualsComparisonType">
+    	<complexContent>
+    		<extension base="tns:EqualsComparisonType"></extension>
+    	</complexContent>
+    </complexType>
+
+    <complexType name="NotExistsComparisonType">
+    	<complexContent>
+    		<extension base="tns:JoinComparatorType"></extension>
+    	</complexContent>
+    </complexType>
+
+    <complexType name="MatchesComparisonType">
+    	<complexContent>
+    		<extension base="tns:EqualsComparisonType"></extension>
+    	</complexContent>
+    </complexType>
+
+
+    <complexType name="FieldComparisonType">
+    	<choice>
+    		<element name="fieldjoin" type="tns:NameComparatorType"></element>
+    		<element name="fieldvalue" type="string"></element>
+    	</choice>
+    </complexType>
+
+    <complexType name="ValueComparatorType">
+    	<sequence>
+    		<element name="fieldName" type="string"></element>
+    		<element name="operator" type="tns:ComparatorType"></element>
+    		<element name="fieldValue" type="anySimpleType"></element>
+    	</sequence>
+    </complexType>
+
+
+    <complexType name="ValuesComparatorType">
+    	<sequence>
+    		<element name="whereElement"
+    			type="tns:ValueComparatorType" maxOccurs="unbounded" minOccurs="0">
+    		</element>
+    	</sequence>
+    </complexType>
+
+    <complexType name="RTMNodeType">
+    	<sequence>
+    		<element name="ruleContext" type="tns:RulesIDContextType"></element>
+    		<element name="name" type="string"></element>
+    		<element name="ruleId" type="string"></element>
+    	</sequence>
+    </complexType>
+
+    <complexType name="RootNodeType">
+    	<sequence>
+    		<element name="objectNode" type="tns:ObjectNodeType"
+    			maxOccurs="unbounded" minOccurs="1">
+    		</element>
+    	</sequence>
+    	<attribute name="id" type="string"></attribute>
+    	<attribute name="createdBy" type="string"></attribute>
+    	<attribute name="createdDate" type="dateTime"></attribute>
+    	<attribute name="modifiedDate" type="dateTime"></attribute>
+    	<attribute name="description" type="string"></attribute>
+    </complexType>
+
+    <complexType name="JoinNodeType">
+    	<sequence>
+    		<element name="ruleContext" type="tns:RulesIDContextType"></element>
+    		<element name="name" type="string"></element>
+    		<element name="comparator" type="tns:JoinComparatorType"
+    			maxOccurs="1" minOccurs="1">
+    		</element>
+    		<choice>
+    			<element name="alphaNode" type="tns:AlphaNodeType"></element>
+    			<element name="joinNode" type="tns:JoinNodeType"></element>
+    			<element name="ruleNode" type="tns:RTMNodeType"></element>
+    		</choice>
+    	</sequence>
+    	<attribute name="id" type="string"></attribute>
+    	<attribute name="createdBy" type="string"></attribute>
+    	<attribute name="description" type="string"></attribute>		
+    </complexType>
+
+    <complexType name="ContextType"></complexType>
+
+    <complexType name="RulesIDContextType">
+    	<complexContent>
+    		<extension base="tns:ContextType">
+    			<sequence>
+    				<element name="rulesContext"
+    					type="tns:RuleComplexType" maxOccurs="unbounded" minOccurs="1">
+    				</element>
+    			</sequence>
+    		</extension>
+    	</complexContent>
+    </complexType>
+    
+    <complexType name="RuleComplexType">
+    	<sequence>
+    		<element name="ruleId" type="string" maxOccurs="1" minOccurs="1"></element>
+    		<element name="ruleName" type="string" maxOccurs="1" minOccurs="0"></element>
+    		<element name="ruleDescr" type="string" maxOccurs="1" minOccurs="0"></element>
+    		<element name="rulesetId" type="string" maxOccurs="1" minOccurs="0"></element>
+    		<element name="rulebaseId" type="string" maxOccurs="1" minOccurs="0"></element>
+    		<element name="rulebaseName" type="string" maxOccurs="1" minOccurs="0"></element>
+    		<element name="moduleName" type="string" maxOccurs="1" minOccurs="0"></element>
+    		<element name="packageId" type="string" maxOccurs="1" minOccurs="0"></element>
+    	</sequence>
+    </complexType>
+
+    <element name="networkswitch" type="tns:RootNodeType"></element>
+</schema>

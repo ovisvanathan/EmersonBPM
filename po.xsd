@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<xsd:schema xmlns:xsd="http://www.w3.org/2001/XMLSchema" targetNamespace="http://www.example.com/SimplePO" xmlns:PO="http://www.example.com/SimplePO">
+<xsd:complexType name="PurchaseOrder">
+	<xsd:sequence>
+		<xsd:element name="shipTo" type="xsd:string"/>
+		<xsd:element name="billTo" type="xsd:string"/>
+		<xsd:element name="items"  type="PO:Item" minOccurs="0" maxOccurs="unbounded"/>
+	</xsd:sequence>
+</xsd:complexType>
+<xsd:complexType name="Item">
+	<xsd:sequence>
+		<xsd:element name="productName" type="xsd:string"/>
+		<xsd:element name="quantity" type="xsd:int"/>
+		<xsd:element name="price" type="xsd:float"/>
+	</xsd:sequence>
+</xsd:complexType>
+</xsd:schema>
