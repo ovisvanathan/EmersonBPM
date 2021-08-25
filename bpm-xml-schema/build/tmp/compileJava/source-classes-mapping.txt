@@ -1,0 +1,8 @@
+com/emerson/bpm/schema/util/SchemaUtils.java
+ com.emerson.bpm.schema.util.SchemaUtils
+com/emerson/bpm/schema/ElementStack.java
+ com.emerson.bpm.schema.ElementStack
+com/emerson/bpm/schema/AttrInfo.java
+ com.emerson.bpm.schema.AttrInfo
+com/emerson/bpm/schema/SchemaTreeWalk.java
+ com.emerson.bpm.schema.SchemaTreeWalk

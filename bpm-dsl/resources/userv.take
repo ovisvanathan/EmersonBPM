@@ -1,0 +1,288 @@
+// example based on the UServ product derby
+// the original rule set is Copyright of the Business Rules Forum
+// see also http://www.businessrulesforum.com/2005_Product_Derby.pdf
+@@dc:creator=Jens Dietrich
+@@dc:date=2007-09-12
+import example.nz.org.take.compiler.userv.domainmodel.*;
+var Car car
+var Driver driver,client
+var Policy policy
+var java.lang.String category 
+var int x
+ref java.util.Collection HighTheftProbabilityAutoList
+ref int CurrentYear,NextYear
+// queries
+@take.compilerhint.class=PotentialTheftRating
+@take.compilerhint.slots=car,rating
+@take.compilerhint.method=getPotenialTheftRating
+query potentialTheftRating[in,out]
+@take.compilerhint.class=PotentialOccupantInjuryRating
+@take.compilerhint.slots=car,rating
+@take.compilerhint.method=getPotentialOccupantInjuryRating
+query potentialOccupantInjuryRating[in,out]
+@take.compilerhint.class=AutoEligibility
+@take.compilerhint.slots=car,value
+@take.compilerhint.method=getAutoEligibility
+query autoEligibility[in,out] 
+@take.compilerhint.class=DriverCategory
+@take.compilerhint.slots=driver,category
+@take.compilerhint.method=getDriverCategory
+query driverCategory[in,out] 
+@take.compilerhint.class=DriverEligibility
+@take.compilerhint.slots=driver
+@take.compilerhint.method=getDriverEligibility
+query isEligible[in] 
+@take.compilerhint.class=HighRiskDriver
+@take.compilerhint.slots=driver
+@take.compilerhint.method=isHighRiskDriver
+query isHighRiskDriver[in] 
+@take.compilerhint.class=TrainedDriver
+@take.compilerhint.slots=driver
+@take.compilerhint.method=hasTrainingCertification
+query hasTrainingCertification[in] 
+@take.compilerhint.class=PolicyEligibilityScore
+@take.compilerhint.slots=car,driver,score
+@take.compilerhint.method=getPolicyEligibilityScore
+query policyEligibilityScore[in,in,out]
+@take.compilerhint.class=InsuranceEligibility
+@take.compilerhint.slots=car,driver,status
+@take.compilerhint.method=getPolicyEligibility
+query insuranceEligibility[in,in,out] 
+@take.compilerhint.class=LongTermClient
+@take.compilerhint.slots=driver
+@take.compilerhint.method=isLongTermClient
+query isLongTermClient[in]
+@take.compilerhint.class=BasePremium
+@take.compilerhint.slots=car,premium
+@take.compilerhint.method=getBasePremium
+query basePremium[in,out]
+@take.compilerhint.class=AdditionalPremium
+@take.compilerhint.slots=policy,car,premium
+@take.compilerhint.method=getAdditionalPremium
+query additionalPremium[in,in,out]
+@take.compilerhint.class=AdditionalDriverPremium
+@take.compilerhint.slots=driver,premium
+@take.compilerhint.method=getAdditionalDriverPremium
+query additionalDriverPremium[in,out]
+@take.compilerhint.class=PremiumDiscount
+@take.compilerhint.slots=car,discount
+@take.compilerhint.method=getPremiumDiscount
+query premiumDiscount[in,out]
+// aggregations
+aggregation eligibilityScore = sum x policyEligibilityScore[car,driver,x]
+// Auto Eligibility Rule Set
+@category=Auto Eligibility Rule Set
+@description=If the car is a convertible, then the car's potential theft rating is high.
+AE_PTC01: if car.isConvertible then potentialTheftRating[car,"high"]
+@category=Auto Eligibility Rule Set
+@description=If the car's price is greater than $45,000, then the car's potential theft rating is high.
+AE_PTC02: if car.price>45000 then potentialTheftRating[car,"high"]
+@category=Auto Eligibility Rule Set
+@description=If the car model is on the list of 'High Theft Probability Auto', then the car's potential theft rating is high.
+AE_PTC03: if contains[HighTheftProbabilityAutoList,car.type] then potentialTheftRating[car,"high"]
+@category=Auto Eligibility Rule Set
+@description=If all of the following are true, then the car's potential theft rating is moderate: car's price is between $20,000 and $45,000, car model is not on the list of 'High Theft Probability Auto'.
+AE_PTC04: if car.price>20000 and car.price<45000 and not contains[HighTheftProbabilityAutoList,car.type] then potentialTheftRating[car,"moderate"]
+@category=Auto Eligibility Rule Set
+@description=If all of the following are true, then the car's potential theft rating is low: car's price is less that $20,000, car model is not on the list of 'High Theft Probability Auto'.
+AE_PTC05: if car.price<20000 and not contains[HighTheftProbabilityAutoList,car.type] then potentialTheftRating[car,"low"]
+@category=Auto Eligibility Rule Set
+@description=If the car has no airbags, then the car's potential occupant injury rating is extremely high.
+AE_POIC01: if not car.hasAirbags then potentialOccupantInjuryRating[car,"extremely high"]
+@category=Auto Eligibility Rule Set
+@description=If the car only has driver's air bag, then the car's potential occupant injury rating is high.
+AE_POIC02: if car.hasDriversAirbag and not car.hasFrontPassengerAirbag and not car.hasSidePanelAirbags then potentialOccupantInjuryRating[car,"high"]
+@category=Auto Eligibility Rule Set
+@description=If the car has driver's and front passenger air bags, then the car's potential occupant injury rating is moderate.
+AE_POIC03: if car.hasDriversAirbag and car.hasFrontPassengerAirbag and not car.hasSidePanelAirbags then potentialOccupantInjuryRating[car,"moderate"]
+@category=Auto Eligibility Rule Set
+@description=If the car has driver's front passenger and side panel air bags, then the car's potential occupant injury is low.
+AE_POIC04: if car.hasDriversAirbag and car.hasFrontPassengerAirbag and car.hasSidePanelAirbags then potentialOccupantInjuryRating[car,"low"]
+@category=Auto Eligibility Rule Set
+@description=If the car is a convertible and has no roll bar, then the potential occupant injury is extremely high.
+AE_POIC05: if car.isConvertible and not car.hasRollBar then potentialOccupantInjuryRating[car,"extremely high"]
+@category=Auto Eligibility Rule Set
+@description=If the Potential Occupant Injury Rating is extremely high, then the auto eligibility is 'not eligible'.
+AE_01: if potentialOccupantInjuryRating[car,"extremely high"] then autoEligibility[car,"not eligible"]
+@category=Auto Eligibility Rule Set
+@description=If the Potential Occupant Injury Rating is high, then the auto eligibility is 'provisional'.
+AE_02: if potentialOccupantInjuryRating[car,"high"] then autoEligibility[car,"provisional"]
+@category=Auto Eligibility Rule Set
+@description=If the Potential Theft Rating is high, then the auto eligibility is 'provisional'.
+AE_03: if potentialTheftRating[car,"high"] then autoEligibility[car,"provisional"]
+@category=Auto Eligibility Rule Set
+@description=If none of the following is true, then the auto eligibility is 'eligible': Auto eligibility is 'not eligible',Auto eligibility is 'provisional'.
+AE_04: autoEligibility[car,"eligible"]
+// Driver Eligibility Rule Set
+@category=Driver Eligibility Rule Set
+@description=If the driver is male and is under the age of 25, then young driver.
+DE_DAC01: if driver.isMale and driver.age<25 then driverCategory[driver,"young driver"]
+@category=Driver Eligibility Rule Set
+@description=If the driver is female and is under the age of 20, then young driver.
+DE_DAC02: if not driver.isMale and driver.age<20 then driverCategory[driver,"young driver"]
+@category=Driver Eligibility Rule Set
+@description=If young driver and driver has training certification, then eligible driver.
+DE_DAC03: if driverCategory[driver,"young driver"] and hasTrainingCertification[driver] then isEligible[driver]
+@category=Driver Eligibility Rule Set
+@description=If the driver is over the age of 70, then senior driver.
+DE_DAC04: if driver.age>70 then driverCategory[driver,"senior driver"]
+@category=Driver Eligibility Rule Set
+@description=If senior driver and driver has training certification, then eligible driver.
+DE_DAC05: if driverCategory[driver,"senior driver"] and hasTrainingCertification[driver] then isEligible[driver]
+@category=Driver Eligibility Rule Set
+@description=If the following are not true, then eligible driver: Young driver, Senior driver.
+DE_DAC06: if not driverCategory[driver,"senior driver"] and not driverCategory[driver,"young driver"] then isEligible[driver]
+@category=Driver Eligibility Rule Set
+@description=If driver has taken driver's training from school then driver has training certification.
+DE_DAC07: if driver.hasDriversTrainingFromSchool then hasTrainingCertification[driver]
+@category=Driver Eligibility Rule Set
+@description=If driver has taken driver's training from a licensed driver training company, then driver has training certification.
+DE_DAC08: if driver.hasDriversTrainingFromLicensedDriverTrainingCompany then hasTrainingCertification[driver]
+@category=Driver Eligibility Rule Set
+@description=If driver had taken a senior citizen driver's refresher course, then driver has training certification.
+DE_DAC09: if driver.hasTakenASeniorCitizenDriversRefresherCourse then hasTrainingCertification[driver]
+@category=Driver Eligibility Rule Set
+@description=If the driver has been convicted of a DUI, then the driver qualifies as a High Risk Driver.
+DE_DRC01: if driver.hasBeenConvictedOfaDUI then isHighRiskDriver[driver]
+@category=Driver Eligibility Rule Set
+@description=If the number of accidents the applicant has been involved in is greater than 2, then the driver is a High Risk Driver.
+DE_DRC02: if driver.numberOfAccidentsInvolvedIn>2 then isHighRiskDriver[driver]
+@category=Driver Eligibility Rule Set
+@description=If the driver has had more that 3 moving violations in the last two years, then the driver is a High Risk Driver.
+DE_DRC03: if driver.numberOfMovingViolationsInLastTwoYears>3 then isHighRiskDriver[driver]
+// Eligibility Scoring Rule Set
+@category=Eligibility Scoring Rule Set
+@description=If car is Not Eligible then increase policy eligibility score by 100.
+ES_01a: if autoEligibility[car,"not eligible"] then policyEligibilityScore[car,driver,100]
+@category=Eligibility Scoring Rule Set
+@description=If car is Provisional then increase policy eligibility score by 50.
+ES_01b: if autoEligibility[car,"provisional"] then policyEligibilityScore[car,driver,50]
+@category=Eligibility Scoring Rule Set
+@description=If driver is Young Driver and is not an Eligible Driver then increase policy eligibility score by 30.
+ES_02a: if driverCategory[driver,"young driver"] and not isEligible[driver] then policyEligibilityScore[car,driver,30]
+@category=Eligibility Scoring Rule Set
+@description=If driver is Senior Driver and is not an Eligible Driver then increase policy eligibility score by 20.
+ES_02b: if driverCategory[driver,"senior driver"] and not isEligible[driver] then policyEligibilityScore[car,driver,20]
+@category=Eligibility Scoring Rule Set
+@description=If driver is High Risk Driver then increase polict eligibility score by 100.
+ES_02c: if isHighRiskDriver[driver] then policyEligibilityScore[car,driver,100]
+@category=Eligibility Scoring Rule Set
+@description=If client is Preferred then reduce policy eligibility score by 50.
+ES_03a: if isPreferred[client] then policyEligibilityScore[car,client,-50]
+@category=Eligibility Scoring Rule Set
+@description=If client is Elite then reduce policy eligibility score by 100.
+ES_03b: if isElite[client] then policyEligibilityScore[car,client,-100]
+@category=Eligibility Scoring Rule Set
+@description=If eligibility score is less that 100, then client is eligible for insurance.
+ES_04: if eligibilityScore(car,client)<100 then insuranceEligibility[car,client,"eligible"]
+@category=Eligibility Scoring Rule Set
+@description=If eligibility score is between 100 and 250 inclusive, then the client's application/policy renewal must be reviewed by underwriting manager who will determine whether the client is eligible for auto insurance.
+ES_05: if eligibilityScore(car,client)>=100 and eligibilityScore(car,client)<=250 then insuranceEligibility[car,client,"must be reviewed by underwriting manager"]
+@category=Eligibility Scoring Rule Set
+@description=If eligibility score is greater than 250, the client is not eligible for auto insurance.
+ES_06: if eligibilityScore(car,client)>250 then insuranceEligibility[car,client,"not eligible"]
+@category=Eligibility Scoring Rule Set
+@description=If a long term client, the client is always eligible for auto insurance, as is every person and car directly covered by a long term client's auto policy.
+ES_07: if isLongTermClient[client] then insuranceEligibility[car,client,"eligible"]
+@category=Eligibility Scoring Rule Set
+@description=A long term client has maintained a UServ portfolio for 15 years.
+ES_08: if client.numberOfYearsWithUServ>=15 then isLongTermClient[client]
+// Auto Premiums Rule Set
+@category=Auto Premiums Rule Set
+@description=If compact car, then base premium is $250.
+AP_01: if car.isCompact then basePremium[car,250]
+@category=Auto Premiums Rule Set
+@description=If sedan, then base premium is $400.
+AP_02: if car.isSedan then basePremium[car,400]
+@category=Auto Premiums Rule Set
+@description=If luxury car, then base premium is $500.
+AP_03: if car.isLuxury then basePremium[car,500]
+@category=Auto Premiums Rule Set
+@description=If car is new, then increase premium by $400.
+AP_04: if isNew[car] then additionalPremium[policy,car,400]
+@category=Auto Premiums Rule Set
+@description=If the model year is the same as the current year, then new car.
+AP_05: if car.modelYear==CurrentYear then isNew[car]
+@category=Auto Premiums Rule Set
+@description=If the model year is the same as next year, then the car is new.
+AP_06: if car.modelYear==NextYear then isNew[car]
+@category=Auto Premiums Rule Set
+@description=If car is less than 5 years old, then increase premium by $300.
+AP_07: if car.age<5 and not isNew[car] then additionalPremium[policy,car,300]
+@category=Auto Premiums Rule Set
+@description=If car is between 5 and 10 years old, then increase premium by $250.
+AP_08: if car.age>=5 and car.age<=10 then additionalPremium[policy,car,250]
+@category=Auto Premiums Rule Set
+@description=If uninsured motorist coverage is included, then increase premium by $300.
+AP_09: if policy.includesUninsuredMotoristCoverage then additionalPremium[policy,car,300]
+@category=Auto Premiums Rule Set
+@description=If medical coverage is included, then increase premium by $600.
+AP_10: if policy.includesMedicalCoverage then additionalPremium[policy,car,600]
+@category=Auto Premiums Rule Set
+@description=If Potential Occupant Injury is Extremely High, then increase premium by $1,000.
+AP_11: if potentialOccupantInjuryRating[car,"extremely high"] then additionalPremium[policy,car,1000]
+@category=Auto Premiums Rule Set
+@description=If Potential Occupant Injury is High, then increase premium by $500.
+AP_12: if potentialOccupantInjuryRating[car,"high"] then additionalPremium[policy,car,500]
+@category=Auto Premiums Rule Set
+@description=If Potential Theft is High, then increase premium by $500.
+AP_13: if potentialTheftRating[car,"high"] then additionalPremium[policy,car,500]
+// Auto Discounts Rule Set
+@category=Auto Discounts Rule Set
+@description=If the car only has Driver airbags then lower the premium by 12%.
+AD_01: if car.hasAirbags and not car.hasFrontPassengerAirbag and not car.hasSidePanelAirbags then premiumDiscount[car,12]
+@category=Auto Discounts Rule Set
+@description=If the car has Driver and Passenger airbags then lower the premium by 15%.
+AD_02: if car.hasAirbags and car.hasFrontPassengerAirbag and not car.hasSidePanelAirbags then premiumDiscount[car,15]
+@category=Auto Discounts Rule Set
+@description=If the car has Driver, Passenger and Side airbags then lower the premium by 18%.
+AD_03: if car.hasAirbags and car.hasFrontPassengerAirbag and car.hasSidePanelAirbags then premiumDiscount[car,18]
+@category=Auto Discounts Rule Set
+@description=If the car's potential theft rating is high and the car is equipped with an alarm system, then lower the premium by 10%.
+AD_04: if potentialTheftRating[car,"high"] and car.hasAlarm then premiumDiscount[car,10]
+// Driver Premiums Rule Set
+@category=Driver Premiums Rule Set
+@description=CA is special location.
+DP_00a: if driver.location=="CA" then specialLocation[driver]
+@category=Driver Premiums Rule Set
+@description=NY is special location.
+DP_00b: if driver.location=="NY" then specialLocation[driver]
+@category=Driver Premiums Rule Set
+@description=VA is special location.
+DP_00c: if driver.location=="VA" then specialLocation[driver]
+@category=Driver Premiums Rule Set
+@description=If young driver and married and located in CA, NY or VA, then increase premium by $700.
+DP_01: if driverCategory[driver,"young driver"] and isMarried[driver] and specialLocation[driver] then additionalDriverPremium[driver,700]
+@category=Driver Premiums Rule Set
+@description=If young driver and single and located in CA, NY or VA, then increase premium by $720.
+DP_02: if driverCategory[driver,"young driver"] and not isMarried[driver] and specialLocation[driver] then additionalDriverPremium[driver,720]
+@category=Driver Premiums Rule Set
+@description=If young driver and married and not located in CA, NY or VA, then increase premium by $300.
+DP_03: if driverCategory[driver,"young driver"] and isMarried[driver] and not specialLocation[driver] then additionalDriverPremium[driver,300]
+@category=Driver Premiums Rule Set
+@description=If young driver and single and not located in CA, NY or VA, then increase premium by $300.
+DP_04: if driverCategory[driver,"young driver"] and not isMarried[driver] and not specialLocation[driver] then additionalDriverPremium[driver,300]
+@category=Driver Premiums Rule Set
+@description=If senior driver and located in CA, NY or VA, then increase premium by $500.
+DP_05: if driverCategory[driver,"senior driver"] and specialLocation[driver] then additionalDriverPremium[driver,500]
+@category=Driver Premiums Rule Set
+@description=If senior driver and not located in CA, NY or VA, then increase premium by $200.
+DP_06: if driverCategory[driver,"senior driver"] and not specialLocation[driver] then additionalDriverPremium[driver,200]
+@category=Driver Premiums Rule Set
+@description=Driver is a Typical Driver is all of the following are true: Not a Young Driver,Not a Senior Driver.
+DP_07: if not driverCategory[driver,"young driver"] and not driverCategory[driver,"senior driver"] then driverCategory[driver,"typical driver"]
+@category=Driver Premiums Rule Set
+@description=If a High Risk Driver, then increase premium by $1,000.
+DP_08: if isHighRiskDriver[driver] then additionalDriverPremium[driver,1000]
+@category=Driver Premiums Rule Set
+@description=Raise the premium by $ 150 per accident.
+// remark1 - added prerequisite, otherwise there will be an additional driver premium of 0 for clients without accidents
+// remark2 - the scripting of the mathematical function in the rule head is rather clumsy, this will be changed in a future version
+DP_09: if driver.numberOfAccidentsInvolvedIn>0 then additionalDriverPremium[driver,150*driver.numberOfAccidentsInvolvedIn]
+// Market Discounts Rule Set
+@category=Market Discounts Rule Set
+@description=If a preferred client, lower the premium by $250.
+MSD_01: if isPreferred[client] then additionalDriverPremium[client,-250]
+@category=Market Discounts Rule Set
+@description=If an elite client, then lower the premium by $500.
+MSD_02: if isElite[client] then additionalDriverPremium[client,-500]

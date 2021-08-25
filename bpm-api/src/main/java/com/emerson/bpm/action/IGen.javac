@@ -1,0 +1,479 @@
+package com.emerson.bpm.action;
+
+import java.lang.reflect.Array;
+import java.lang.reflect.Method;
+import java.lang.reflect.Parameter;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+
+import javax.lang.model.element.Modifier;
+
+import com.squareup.javapoet.JavaFile;
+import com.squareup.javapoet.MethodSpec;
+import com.squareup.javapoet.ParameterSpec;
+import com.squareup.javapoet.TypeSpec;
+
+import javassist.util.proxy.MethodFilter;
+import javassist.util.proxy.MethodHandler;
+import javassist.util.proxy.Proxy;
+import javassist.util.proxy.ProxyFactory;
+
+public class IGen {
+	
+	private static final Object INTERFACE_KEY = "INTERFACE";
+
+	private static final String GARGANTUA = "GARGANTUA";
+
+	private static final String SEMI = ";";
+
+	private static final String FQDN_NAME = "org.ergocity.Gargantua";
+
+	private static int INTERFACE_SEQ;
+
+	private static BUILD_STATE INTERFACE_BS;
+
+	static TypeSpec.Builder interfaceBuilder;
+	
+	static Map methodsLookup = new HashMap();
+	
+	static int count;
+	
+	static int mcount;
+	
+	static enum BUILD_STATE {
+		OPEN,
+		CLOSED
+	}
+	
+	static BUILD_STATE buildState;
+	
+	 MethodHandler mi;
+	 
+	Map<String, String> klazzNamesMap = new HashMap();
+	
+	Map<String, Integer> klazzPosNamesMap = new HashMap();
+		
+	CallInfo [] callinfos;
+	
+	public CallInfo[] getCallinfos() {
+		return callinfos;
+	}
+
+
+	public static Map generateInterface(Class [] klazzes) {
+		
+		count = 0;
+		
+		for(Class ck : klazzes)
+			generateInterface(ck);
+		
+		buildState = BUILD_STATE.CLOSED;
+
+		if(mcount > 50) {
+
+			TypeSpec intf = interfaceBuilder.build();
+		
+			JavaFile javaFile = JavaFile.builder(FQDN_NAME, intf)
+			    .build();
+
+			methodsLookup.put(INTERFACE_KEY, javaFile);
+			methodsLookup.put(INTERFACE_SEQ, count);
+			methodsLookup.put(INTERFACE_BS, buildState);
+		
+			return methodsLookup;		
+		
+		} else
+			return null;
+		
+	}
+
+	
+	/*
+	public static Map finish() {
+		
+		buildState = BUILD_STATE.CLOSED;
+		
+		TypeSpec intf = interfaceBuilder.build();
+		
+		JavaFile javaFile = JavaFile.builder(FQDN_NAME, intf)
+			    .build();
+
+		methodsLookup.put(INTERFACE_KEY, javaFile);
+		methodsLookup.put(INTERFACE_SEQ, count);
+		methodsLookup.put(INTERFACE_BS, buildState);
+				
+		String ijFile = jasmineTransform(javaFile, methodsLookup);
+				
+		generateClass(ijFile, GARGANTUA);		
+		
+		return methodsLookup;		
+	}
+	*/
+	
+	/*
+	private static void generateClass(String ijFile, String className) {
+
+		jasmin.ClassFile classFile = new jasmin.ClassFile();
+		    boolean generate_linenum = false;
+
+			try {
+				BufferedReader inp;
+				String encoding = "utf-8";
+				{
+					InputStream fs = new ByteArrayInputStream(ijFile.getBytes());
+					InputStreamReader ir;
+					if(encoding == null)
+						ir = new InputStreamReader(fs);
+					else
+						ir = new InputStreamReader(fs, encoding);
+
+					inp = new BufferedReader(ir);
+				}
+				classFile.readJasmin(inp, className, generate_linenum);
+				
+				inp.close();
+			} catch (UnsupportedEncodingException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			} catch (IOException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			} catch (Exception e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
+	}
+	*/
+
+	private static String jasmineTransform(JavaFile javaFile, Map methodsLookup) {
+
+		StringBuffer sbuf = new StringBuffer();
+		
+		String pkgName = javaFile.packageName;
+		
+		TypeSpec tp = javaFile.typeSpec;
+		
+		String typeName = tp.name;
+		
+		List<MethodSpec> mps = tp.methodSpecs;
+
+		pkgName = pkgName.replaceAll("\\.", "/");
+		
+		JavaFile jfile = (JavaFile) methodsLookup.get(INTERFACE_KEY);
+		
+		int icount = (Integer) methodsLookup.get(INTERFACE_SEQ);
+		
+		String iname = jfile.typeSpec.name;
+		
+		sbuf.append(".interface public " + pkgName + "/" + iname + "_" + icount);
+				
+		sbuf.append("#"); 
+						
+		sbuf.append(".super java/lang/Serializable");
+		
+		sbuf.append("#"); 
+
+		sbuf.append("\r\n"); 
+		sbuf.append("\r\n"); 
+
+		for(MethodSpec m : mps) {
+			
+			String methodName = m.name;
+			
+			String retStr = m.returnType.toString();
+			
+			List<ParameterSpec> pspec = m.parameters;
+						
+			String params = getBytecodeTypesStr(pspec);
+			String revtype = getReturnTypeStr(retStr);
+			sbuf.append(".method abstract " + methodName + "(" + params + ")" + revtype);
+		
+			sbuf.append("#"); 
+
+		}
+		
+		
+		
+		System.out.println("SBUF debug begin ++++++++++++++++++++= " );
+		
+		System.out.println(sbuf.toString());
+		
+		System.out.println("SBUF debug end ++++++++++++++++++++= " );
+
+		return sbuf.toString();
+		
+	}
+
+
+	private static String getReturnTypeStr(String retStr) {
+
+		String rtype = "";
+		
+		System.out.println("retStr = " + retStr);
+		
+		if(retStr.contains("void"))
+			rtype = "V";
+		else if(retStr.contains("int"))
+			rtype = "I";	
+		else {
+			
+			retStr.replaceAll("\\.", "/");
+
+			String px = retStr.replaceAll(" ", "");
+
+			int xpos = px.indexOf("[]");
+			
+			if(xpos != -1) {
+				rtype = "L" + retStr;
+						
+			} else
+				rtype = "L" + retStr;
+			
+		}
+		
+		System.out.println("rtype = " + rtype);
+		
+		return rtype;
+	}
+
+
+	private static String getBytecodeTypesStr(List<ParameterSpec> pspec) {
+
+		
+		String stype = "";
+		
+		String ptype = null;
+		for(ParameterSpec p : pspec) {
+			
+			String pname = p.name;
+			ptype = p.type.toString();
+
+			System.out.println("ptype = " + ptype);
+			if(ptype.equals("java.lang.String")) {				
+				stype = "Ljava/lang/String";
+			} else if(ptype.equals("java.lang.Integer")) {				
+				stype = "I";
+			} else if(ptype.equals("int")) {				
+				stype = "I";
+			} else if(ptype.equals("java.lang.Double")) {				
+				stype = "D";
+			} else {
+			
+				String xtp = ptype.replaceAll(" ", "");
+				
+				int ipos = xtp.indexOf("[]");
+
+				ptype = ptype.replaceAll("\\.", "/");
+
+				if(ipos != -1) {
+					stype ="[L" + ptype;						
+				} else {
+					stype ="L" + ptype;
+				}
+			}
+
+			stype = stype + SEMI;
+			
+		}
+
+		System.out.println("stype = " + stype);
+		
+		return stype;
+	}
+
+
+	static Map generateInterface(Class [] klazzes, Map interfaceMap) {
+
+		
+		int count = (Integer) interfaceMap.get(INTERFACE_SEQ);
+		
+		
+		for(Class ck : klazzes)
+			generateInterface(ck);
+		
+		buildState = BUILD_STATE.CLOSED;
+		
+		TypeSpec intf = null;
+		if(mcount > 50) {
+			intf = interfaceBuilder.build();
+		
+			JavaFile javaFile = JavaFile.builder("org.ergocity.Gargantua", intf)
+			    .build();
+			
+			methodsLookup.put(INTERFACE_KEY, javaFile);
+			methodsLookup.put(INTERFACE_SEQ, count);
+			methodsLookup.put(INTERFACE_BS, buildState);
+		
+			return methodsLookup;		
+	
+		} else
+			return null;
+		
+		
+	}
+
+	
+	static String generateInterface(Class klazz) {
+
+		Method [] mks = klazz.getDeclaredMethods();
+		
+	//	String className = klazz.getName();
+		String key = null;
+		if(interfaceBuilder == null) {
+			key = GARGANTUA + "_" + count;
+			interfaceBuilder = TypeSpec.interfaceBuilder(key)
+			    .addModifiers(Modifier.PUBLIC, Modifier.FINAL);
+		}
+	
+		mcount = mks.length;
+		for(Method m : mks) {
+			
+			String name = m.getName();
+		
+			methodsLookup.put(name, key);
+			
+			int count = m.getParameterCount();
+			
+			Class [] paramTypes = m.getParameterTypes();
+			
+			Parameter [] pms = m.getParameters();
+			
+			Class retType = m.getReturnType();
+
+			List<ParameterSpec> pspec = new ArrayList();
+			for(int i=0;i<count;i++) {
+				ParameterSpec ps = ParameterSpec.builder(paramTypes[i], pms[i].getName(), Modifier.PUBLIC).build();
+				pspec.add(ps);
+			}
+			
+			
+			MethodSpec m1 = MethodSpec.methodBuilder(name)
+				    .addModifiers(Modifier.PUBLIC, Modifier.ABSTRACT)
+				    .returns(retType)
+				   .addParameters(pspec)
+				    .build();
+			
+			interfaceBuilder.addMethod(m1);			
+		}
+		
+		return null;
+	}
+	
+	public <T> T [] generateProxyForAbstractClass(Class<T> [] entityClasses) {
+
+
+		int n = entityClasses.length;
+		
+		callinfos = new CallInfo[n];
+				
+		T [] tinst = (T[]) Array.newInstance(Object.class, n);
+		
+		int p = 0;
+		for(Class k : entityClasses) {
+			T inst = (T) generateProxyForAbstractClass(k, p);
+			tinst[p++] = inst;
+		}
+		
+        System.out.println("kposmap: " + klazzPosNamesMap);
+        System.out.println("knamemap: " + klazzNamesMap);
+		
+		
+		return tinst;
+		
+	}
+	
+	public Map<String, String> getKlazzNamesMap() {
+		return klazzNamesMap;
+	}
+
+	public Map<String, Integer> getKlazzPosNamesMap() {
+		return klazzPosNamesMap;
+	}
+
+	public <T> T generateProxyForAbstractClass(Class<T> entityClass, int posn) {				
+		
+		ProxyFactory factory = new ProxyFactory();
+			
+			factory.setSuperclass(entityClass);
+			
+			factory.setFilter(
+			    new MethodFilter() {
+			        @Override
+			        public boolean isHandled(Method method) {
+			        	
+			        	System.out.println("handled mname =" + method.getName());
+			        	
+			            return (method.getName().startsWith("set") ||
+			            		method.getName().equals("equals"));
+			        }
+			    }
+			);
+			
+			
+			 MethodHandler mi = new MethodHandler() {
+				 
+				 public Object invoke(Object self, Method m, Method proceed,
+			                          Object[] args) throws Throwable {
+			         System.out.println("Name: " + m.getName());
+			         
+			         System.out.println("Name: " + proceed);
+				     
+					 long calltime = System.currentTimeMillis();				 
+					 Object param = args[0];
+
+					 int pos = klazzPosNamesMap.get(self.getClass().getName());
+			
+					 CallInfo cinfo = new CallInfo();
+					 cinfo.calltime = calltime;
+					 cinfo.param = param;
+
+					 callinfos[pos] = cinfo;
+					 
+			         return proceed.invoke(self, args);  // execute the original method.
+			     }				 
+			 };		 
+		
+			 Class c = factory.createClass();
+			 T p = null;
+
+			 try {
+				p = (T) c.newInstance();
+				 ((Proxy) p).setHandler(mi);
+			//	System.out.println(p.getName());
+			
+				 
+				String fqdName = p.getClass().getName();
+				 
+				klazzPosNamesMap.put(fqdName, posn);
+					
+				klazzNamesMap.put(entityClass.getName(), fqdName);
+				 
+			} catch (InstantiationException e1) {
+				// TODO Auto-generated catch block
+				e1.printStackTrace();				 
+			} catch (IllegalArgumentException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			} catch (IllegalAccessException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
+			 
+			 return p;
+			 
+	}
+
+
+	public MethodHandler getMethodHandler() {
+		return mi;
+	}
+
+
+	public static Map finish() {
+
+		return null;
+	}
+	
+}

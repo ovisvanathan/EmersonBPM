@@ -1,0 +1,104 @@
+com/emerson/bpm/functor/Predicate2.java
+ com.emerson.bpm.functor.Predicate2
+com/emerson/bpm/functor/OrPredicate.java
+ com.emerson.bpm.functor.OrPredicate
+com/emerson/bpm/functor/OnePredicate.java
+ com.emerson.bpm.functor.OnePredicate
+com/emerson/bpm/functor/el/ChainEvaluator.java
+ com.emerson.bpm.functor.el.ChainEvaluator
+com/emerson/bpm/functor/el/ELEvaluator.java
+ com.emerson.bpm.functor.el.ELEvaluator
+com/emerson/bpm/functor/cmp/AlphaNumeric.java
+ com.emerson.bpm.functor.cmp.AlphaNumeric
+com/emerson/bpm/functor/FunctorUtils.java
+ com.emerson.bpm.functor.FunctorUtils
+ com.emerson.bpm.functor.FunctorUtils$NumericTypes
+com/emerson/bpm/functor/cmp/ShortNumeric.java
+ com.emerson.bpm.functor.cmp.ShortNumeric
+com/emerson/bpm/functor/CompoundPredicate.java
+ com.emerson.bpm.functor.CompoundPredicate
+com/emerson/bpm/functor/TruePredicate.java
+ com.emerson.bpm.functor.TruePredicate
+com/emerson/bpm/functor/cmp/CharNumeric.java
+ com.emerson.bpm.functor.cmp.CharNumeric
+com/emerson/bpm/functor/NArgPredicate.java
+ com.emerson.bpm.functor.NArgPredicate
+com/emerson/bpm/functor/BooleanPredicate.java
+ com.emerson.bpm.functor.BooleanPredicate
+com/emerson/bpm/functor/DuplicateSetException.java
+ com.emerson.bpm.functor.DuplicateSetException
+com/emerson/bpm/functor/cmp/Alphabetic.java
+ com.emerson.bpm.functor.cmp.Alphabetic
+com/emerson/bpm/functor/NotPredicate.java
+ com.emerson.bpm.functor.NotPredicate
+com/emerson/bpm/functor/Expression.java
+ com.emerson.bpm.functor.Expression
+com/emerson/bpm/functor/IdentityPredicate.java
+ com.emerson.bpm.functor.IdentityPredicate
+com/emerson/bpm/functor/NonePredicate.java
+ com.emerson.bpm.functor.NonePredicate
+com/emerson/bpm/functor/cmp/DateNumeric.java
+ com.emerson.bpm.functor.cmp.DateNumeric
+com/emerson/bpm/functor/ProcessCombination.java
+ com.emerson.bpm.functor.ProcessCombination
+com/emerson/bpm/functor/FalsePredicate.java
+ com.emerson.bpm.functor.FalsePredicate
+com/emerson/bpm/functor/ProcessGlobal.java
+ com.emerson.bpm.functor.ProcessGlobal
+com/emerson/bpm/functor/LongNumeric.java
+ com.emerson.bpm.functor.LongNumeric
+com/emerson/bpm/functor/AllPredicate.java
+ com.emerson.bpm.functor.AllPredicate
+com/emerson/bpm/functor/cmp/ByteNumeric.java
+ com.emerson.bpm.functor.cmp.ByteNumeric
+com/emerson/bpm/functor/AnyPredicate.java
+ com.emerson.bpm.functor.AnyPredicate
+com/emerson/bpm/functor/cmp/DoubleNumeric.java
+ com.emerson.bpm.functor.cmp.DoubleNumeric
+com/emerson/bpm/functor/EvenOddPredicate.java
+ com.emerson.bpm.functor.EvenOddPredicate
+com/emerson/bpm/functor/PredicateDecorator.java
+ com.emerson.bpm.functor.PredicateDecorator
+com/emerson/bpm/functor/UniquePredicate.java
+ com.emerson.bpm.functor.UniquePredicate
+com/emerson/bpm/functor/cmp/IntNumeric.java
+ com.emerson.bpm.functor.cmp.IntNumeric
+com/emerson/bpm/functor/el/ELProvider.java
+ com.emerson.bpm.functor.el.ELProvider
+com/emerson/bpm/functor/cmp/FloatNumeric.java
+ com.emerson.bpm.functor.cmp.FloatNumeric
+com/emerson/bpm/functor/AbstractQuantifierPredicate.java
+ com.emerson.bpm.functor.AbstractQuantifierPredicate
+com/emerson/bpm/functor/el/ExpressionPredicate.java
+ com.emerson.bpm.functor.el.ExpressionPredicate
+com/emerson/bpm/functor/NumberComparisonPredicate.java
+ com.emerson.bpm.functor.NumberComparisonPredicate
+ com.emerson.bpm.functor.NumberComparisonPredicate$Criterion
+com/emerson/bpm/functor/NullPredicate.java
+ com.emerson.bpm.functor.NullPredicate
+com/emerson/bpm/functor/AndPredicate.java
+ com.emerson.bpm.functor.AndPredicate
+com/emerson/bpm/functor/DateTimePredicate.java
+ com.emerson.bpm.functor.DateTimePredicate
+com/emerson/bpm/functor/GenericView.java
+ com.emerson.bpm.functor.GenericView
+ com.emerson.bpm.functor.GenericView$Angle
+ com.emerson.bpm.functor.GenericView$Course
+ com.emerson.bpm.functor.GenericView$Department
+ com.emerson.bpm.functor.GenericView$Dimension
+ com.emerson.bpm.functor.GenericView$Distance
+ com.emerson.bpm.functor.GenericView$Project
+ com.emerson.bpm.functor.GenericView$Shape
+ com.emerson.bpm.functor.GenericView$Speed
+ com.emerson.bpm.functor.GenericView$Student
+ com.emerson.bpm.functor.GenericView$Time
+com/emerson/bpm/functor/cmp/Numeric.java
+ com.emerson.bpm.functor.cmp.Numeric
+com/emerson/bpm/functor/IdentitiesPredicate.java
+ com.emerson.bpm.functor.IdentitiesPredicate
+com/emerson/bpm/functor/EqualPredicate.java
+ com.emerson.bpm.functor.EqualPredicate
+com/emerson/bpm/functor/NamedPredicate.java
+ com.emerson.bpm.functor.NamedPredicate
+com/emerson/bpm/functor/util/FunctorUtils.java
+ com.emerson.bpm.functor.util.FunctorUtils

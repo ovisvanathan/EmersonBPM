@@ -1,0 +1,17 @@
+com/emerson/bpm/engine/MessageServiceProviderImpl.java
+ com.emerson.bpm.engine.MessageServiceProviderImpl
+com/emerson/bpm/engine/SessionState.java
+ com.emerson.bpm.engine.SessionState
+com/emerson/bpm/engine/EmersonSession.java
+ com.emerson.bpm.engine.EmersonSession
+ com.emerson.bpm.engine.EmersonSession$1
+ com.emerson.bpm.engine.EmersonSession$EmersonStatefulSession
+ com.emerson.bpm.engine.EmersonSession$EmersonStatelessSession
+com/emerson/bpm/engine/WorkingMemoryImpl.java
+ com.emerson.bpm.engine.WorkingMemoryImpl
+com/emerson/bpm/engine/DefaultSession.java
+ com.emerson.bpm.engine.DefaultSession
+com/emerson/bpm/engine/Rete.java
+ com.emerson.bpm.engine.Rete
+com/emerson/bpm/engine/EmersonAgenda.java
+ com.emerson.bpm.engine.EmersonAgenda

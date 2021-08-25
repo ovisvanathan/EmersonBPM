@@ -1,0 +1,132 @@
+package com.emerson.bpm.action;
+
+import java.util.Map;
+
+import com.emerson.bpm.model.Account;
+import com.emerson.bpm.model.Address;
+import com.emerson.bpm.model.Bank;
+import com.emerson.bpm.model.Branch;
+import com.emerson.bpm.model.Customer;
+import com.emerson.bpm.model.Flight;
+import com.emerson.bpm.model.Person;
+import com.emerson.bpm.model.Ticket;
+import com.impetus.reflect.proxology.handlers.MethodCallInterceptor;
+import com.impetus.reflect.proxology.proxies.Proxies;
+
+import javassist.util.proxy.MethodHandler;
+
+public class ActionProxy {
+
+	Object [] proxies;
+	
+	IGen igen;
+	
+	@SuppressWarnings("unchecked")
+	public ActionProxy() {
+		
+		igen = new IGen();
+		
+		Object [] proxies = igen.generateProxyForAbstractClass(new Class [] {
+				Customer.class,
+				Flight.class,
+				Person.class,
+				Ticket.class,
+				Account.class,
+				Bank.class,
+				Branch.class,
+				Address.class			
+		});
+	
+		Map classNamesMap = igen.getKlazzNamesMap();
+
+		Map classNameToPositionMap = igen.getKlazzPosNamesMap();
+
+		   System.out.println("classNamesMap: " + classNamesMap);
+	        System.out.println("classNameToPositionMap: " + classNameToPositionMap);
+			
+	        
+		String FQName = (String) classNamesMap.get(Bank.class.getName());
+		
+		int bpos = (int) classNameToPositionMap.get(FQName);
+		
+		Bank bank = (Bank) proxies[bpos];
+
+		bank.setName("IPDB Bank");
+
+		System.out.println("bank name is " + bank.getName());
+		
+		MethodHandler mhr = igen.getMethodHandler();
+		
+		CallInfo [] cinfos = igen.getCallinfos();
+
+		CallInfo bankInfo = cinfos[bpos];
+		
+		System.out.println("bank call time is " + bankInfo.calltime);
+		System.out.println("bank set param is " + bankInfo.getParam());
+	
+		Bank bank2 = new Bank("CSB Bank");
+		
+		bank.equals(bank2);
+	
+	}
+	
+	
+	public static void main(String [] args) {
+	//	ActionProxy a = new ActionProxy();
+	//	a.run();
+	
+		/*
+		IGen.generateInterface(new Class [] {
+				Customer.class,
+				Flight.class,
+				Person.class,
+				Ticket.class,
+				Account.class,
+				Bank.class,
+				Branch.class,
+				Address.class
+		});
+	
+		
+		Map map = IGen.finish();
+		
+		*/
+		
+	IGen igen = new IGen();	
+		
+	Object [] proxies = igen.generateProxyForAbstractClass(new Class [] {
+				Customer.class,
+				Flight.class,
+				Person.class,
+				Ticket.class,
+				Account.class,
+				Bank.class,
+				Branch.class,
+				Address.class			
+		});
+	
+		ActionProxy actionProxy = new ActionProxy();
+	
+	
+	}
+	
+	void run() {
+		
+		   MethodCallInterceptor interceptor = (proxy, method, args, handler) -> {
+			   System.out.println("before method + " + method.getName());
+			   Object result = handler.invoke(proxy, args);
+			   System.out.println("after method + " + method.getName());
+			   return result;
+	        };
+		
+	        
+	        Consequence cqproxy = Proxies.interceptingProxy(new ActionConsequence(), Consequence.class, interceptor);
+	 
+	        cqproxy.setAction(new RulesAction());
+	
+	        cqproxy.execute();
+	}
+	
+	
+	
+}

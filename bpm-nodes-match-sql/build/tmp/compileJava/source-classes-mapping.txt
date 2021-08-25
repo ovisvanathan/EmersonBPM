@@ -1,0 +1,50 @@
+com/emerson/bpm/nodes/match/sql/generic/QbAllFieldImp.java
+ com.emerson.bpm.nodes.match.sql.generic.QbAllFieldImp
+com/emerson/bpm/nodes/match/sql/QbField.java
+ com.emerson.bpm.nodes.match.sql.QbField
+com/emerson/bpm/nodes/match/sql/QbInsert.java
+ com.emerson.bpm.nodes.match.sql.QbInsert
+com/emerson/bpm/nodes/match/sql/generic/QbAllTableFieldImp.java
+ com.emerson.bpm.nodes.match.sql.generic.QbAllTableFieldImp
+com/emerson/bpm/nodes/match/sql/test/Sample.java
+ com.emerson.bpm.nodes.match.sql.test.Sample
+com/emerson/bpm/nodes/match/sql/generic/QbDeleteImp.java
+ com.emerson.bpm.nodes.match.sql.generic.QbDeleteImp
+com/emerson/bpm/nodes/match/sql/generic/QbAggregateFieldImp.java
+ com.emerson.bpm.nodes.match.sql.generic.QbAggregateFieldImp
+com/emerson/bpm/nodes/match/sql/QbWhere.java
+ com.emerson.bpm.nodes.match.sql.QbWhere
+com/emerson/bpm/nodes/match/sql/generic/QbQualifiedFieldImp.java
+ com.emerson.bpm.nodes.match.sql.generic.QbQualifiedFieldImp
+com/emerson/bpm/nodes/match/sql/QbDelete.java
+ com.emerson.bpm.nodes.match.sql.QbDelete
+com/emerson/bpm/nodes/match/sql/QbSelect.java
+ com.emerson.bpm.nodes.match.sql.QbSelect
+ com.emerson.bpm.nodes.match.sql.QbSelect$QbOrderBy
+com/emerson/bpm/nodes/match/sql/generic/QbInsertImp.java
+ com.emerson.bpm.nodes.match.sql.generic.QbInsertImp
+com/emerson/bpm/nodes/match/sql/QbQuery.java
+ com.emerson.bpm.nodes.match.sql.QbQuery
+com/emerson/bpm/nodes/match/sql/generic/QbStdFieldImp.java
+ com.emerson.bpm.nodes.match.sql.generic.QbStdFieldImp
+com/emerson/bpm/nodes/match/sql/generic/QbFactoryImp.java
+ com.emerson.bpm.nodes.match.sql.generic.QbFactoryImp
+com/emerson/bpm/nodes/match/sql/QbFactory.java
+ com.emerson.bpm.nodes.match.sql.QbFactory
+com/emerson/bpm/nodes/match/sql/generic/QbSelectImp.java
+ com.emerson.bpm.nodes.match.sql.generic.QbSelectImp
+ com.emerson.bpm.nodes.match.sql.generic.QbSelectImp$1
+com/emerson/bpm/nodes/match/sql/generic/QbCommonImp.java
+ com.emerson.bpm.nodes.match.sql.generic.QbCommonImp
+com/emerson/bpm/nodes/match/sql/generic/QbCustomQuery.java
+ com.emerson.bpm.nodes.match.sql.generic.QbCustomQuery
+com/emerson/bpm/nodes/match/sql/test/TestMain.java
+ com.emerson.bpm.nodes.match.sql.test.TestMain
+com/emerson/bpm/nodes/match/sql/generic/QbWhereImp.java
+ com.emerson.bpm.nodes.match.sql.generic.QbWhereImp
+com/emerson/bpm/nodes/match/sql/generic/QbCustomFieldImp.java
+ com.emerson.bpm.nodes.match.sql.generic.QbCustomFieldImp
+com/emerson/bpm/nodes/match/sql/QbUpdate.java
+ com.emerson.bpm.nodes.match.sql.QbUpdate
+com/emerson/bpm/nodes/match/sql/generic/QbUpdateImp.java
+ com.emerson.bpm.nodes.match.sql.generic.QbUpdateImp
